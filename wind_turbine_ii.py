@@ -1,10 +1,18 @@
 from math import cos, sin, atan, pi, exp, acos, tan
 from numpy import zeros, linspace
 
+# This function calculates the initial shape of the blade to make further calculations using these values
 def initial_values(n, lambda_d, Cld, R, Z):
-    lambdai = zeros(n)      # Tip speed ratio at ith position
-    phi_i = zeros(n)            # Angle of the relative wind velocity at ith position
-    Ci = zeros(n)               # Chord length at ith position
+    # n: Number of sections to divide the blade
+    # lambda_d: design tip speed ratio
+    # Cld: Lift coefficient at a design angle of attack
+    # R: radius of the blade
+    # Z: Number of blades
+    
+    
+    lambdai = zeros(n)              # Tip speed ratio at ith position
+    phi_i = zeros(n)                # Angle of the relative wind velocity at ith position
+    Ci = zeros(n)                   # Chord length at ith position
     rR = linspace(0.20, 0.90, n)    # r/R coordinates
 
     for i in range(n):
@@ -14,7 +22,16 @@ def initial_values(n, lambda_d, Cld, R, Z):
     
     return [lambdai, Ci, rR]
 
+# This is the main function, the results from the function "initial_values()" are used with other parameters
 def blade_geometry(initial_blade, Cd_Cl, n, Cld, alpha_d, R, Z):
+    
+    # initial_blade: Initial values obtained from the function "initial_values()"
+    # Cd_Cl: Drag to lift ratio at a given angle of attacl
+    # n: Number of sections to divide the blade
+    # Cld: Lift coefficient at a design angle of attack
+    # alpha_d: design angle of attack
+    # R: radius of the blade
+    # Z: Number of blades
     
     tip_ratio = initial_blade[0]
     initial_Ci = initial_blade[1]
@@ -74,6 +91,7 @@ def blade_geometry(initial_blade, Cd_Cl, n, Cld, alpha_d, R, Z):
     
     return [rR, Chord, theta[-1], phi[-1], Cx[-1], Cy[-1], Cp]
 
+# This function prints the results in a .txt file called: "blade_dimensions.txt"
 def print_geometry_values(geometry):
     rR = geometry[0]
     Blade_Chord = geometry[1]
@@ -93,21 +111,22 @@ def print_geometry_values(geometry):
     with open('average_cp.txt', 'a') as file:
         file.write('Power Coefficient\t{}\n'.format(Cp))
 
+# This function called all the functions defined before to make the blade design
 def blade_design(N, Rd, Cld, alpha_d, Z, tip_ratio_d, Lift_to_drag_d):
     Initial_geometry = initial_values(N, tip_ratio_d, Cld, Rd, Z)
     Final_geometry = blade_geometry(Initial_geometry, Lift_to_drag_d, N, Cld, alpha, Rd, Z)
     print_geometry_values(Final_geometry)
 
+# This is an example of use
 N = 20
 R = 0.75
 Cl = 1.08
 alpha = 8
 B = 3
-tip = range(2,26)
+tip = 8
 drag_to_lift = 1/51.89
 
-for i in tip:
-    blade_design(N, R, Cl, alpha, B, i, drag_to_lift)
+blade_design(N, R, Cl, alpha, B, tip, drag_to_lift)
 
 print('PROGRAMA EJECUTADO CON EXITO :D')
 
